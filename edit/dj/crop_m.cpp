@@ -31,7 +31,7 @@ void fix_area() {
 }
 
 void draw() {
-	img = imgOrg.clone();										//copy original image
+	img = imgOrg.clone();						//copy original image
 	fix_area();
 	cv::rectangle(img, rect, cv::Scalar(0, 0, 255), 2, 8, 0);	//draw rectangle
 	cv::imshow("Original image", img);
@@ -41,7 +41,7 @@ void onMouse(int event, int x, int y, int flag, void* user_data) {
 	switch (event) {
 	case cv::EVENT_LBUTTONDOWN:		//마우스 왼쪽 버튼이 눌렸을 때
 		clicked = true;
-		p1.x = x;					//클릭한 지점이 시작점
+		p1.x = x;			//클릭한 지점이 시작점
 		p1.y = y;
 		p2.x = x;
 		p2.y = y;
@@ -52,7 +52,7 @@ void onMouse(int event, int x, int y, int flag, void* user_data) {
 		p2.y = y;
 		break;
 	case cv::EVENT_MOUSEMOVE:		//마우스를 움직일 때
-		if (clicked) {				//true일 때 활성화
+		if (clicked) {			//true일 때 활성화
 			p2.x = x;
 			p2.y = y;
 		}
