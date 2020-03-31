@@ -1,9 +1,9 @@
 /*
-¹üÀ§ ¼³Á¤ ¹æ¹ı : ¸¶¿ì½º·Î µå·¡±×ÇØ¼­ ¿µ¿ª ¼³Á¤ ÈÄ Å°º¸µå¿¡¼­ ¿øÇÏ´Â Å°¸¦ ´©¸§
-»õ Ã¢°ú ÇÔ²² Å©·ÓµÈ ÀÌ¹ÌÁö°¡ ¶ä
-Å°º¸µå¸¦ ´©¸£¸é Å©·ÓµÈ ÀÌ¹ÌÁö°¡ »õ·Î ÀúÀåµÇ¸é¼­ Á¾·áµÊ
+ë²”ìœ„ ì„¤ì • ë°©ë²• : ë§ˆìš°ìŠ¤ë¡œ ë“œë˜ê·¸í•´ì„œ ì˜ì—­ ì„¤ì • í›„ í‚¤ë³´ë“œì—ì„œ ì›í•˜ëŠ” í‚¤ë¥¼ ëˆ„ë¦„
+ìƒˆ ì°½ê³¼ í•¨ê»˜ í¬ë¡­ëœ ì´ë¯¸ì§€ê°€ ëœ¸
+í‚¤ë³´ë“œë¥¼ ëˆ„ë¥´ë©´ í¬ë¡­ëœ ì´ë¯¸ì§€ê°€ ìƒˆë¡œ ì €ì¥ë˜ë©´ì„œ ì¢…ë£Œë¨
 
-¼öÁ¤»çÇ× : ¼±ÅÃ ¿µ¿ªÀ» µå·¡±×°¡ ¾Æ´Ñ °¢ ¸ğ¼­¸®¸¦ ÀÚÀ²ÀûÀ¸·Î Á¶ÀıÇÒ ¼ö ÀÖ´Â ¹æ¹ı ÇÊ¿ä
+ìˆ˜ì •ì‚¬í•­ : ì„ íƒ ì˜ì—­ì„ ë“œë˜ê·¸ê°€ ì•„ë‹Œ ê° ëª¨ì„œë¦¬ë¥¼ ììœ¨ì ìœ¼ë¡œ ì¡°ì ˆí•  ìˆ˜ ìˆëŠ” ë°©ë²• í•„ìš”
 */
 
 #include <iostream>
@@ -18,7 +18,7 @@ cv::Point p2(0, 0);					//end point
 
 static bool clicked = false;		//mouse activation
 
-//ÃÊ±â ¿µ¿ªÀ» ÀÌ¹ÌÁö ¾ÈÀ¸·Î ¼³Á¤
+//ì´ˆê¸° ì˜ì—­ì„ ì´ë¯¸ì§€ ì•ˆìœ¼ë¡œ ì„¤ì •
 void fix_area() {
 	if (rect.width > img.cols - rect.x)		//set width
 		rect.width = img.cols - rect.x;
@@ -39,20 +39,20 @@ void draw() {
 
 void onMouse(int event, int x, int y, int flag, void* user_data) {
 	switch (event) {
-	case cv::EVENT_LBUTTONDOWN:		//¸¶¿ì½º ¿ŞÂÊ ¹öÆ°ÀÌ ´­·ÈÀ» ¶§
+	case cv::EVENT_LBUTTONDOWN:		//ë§ˆìš°ìŠ¤ ì™¼ìª½ ë²„íŠ¼ì´ ëˆŒë ¸ì„ ë•Œ
 		clicked = true;
-		p1.x = x;					//Å¬¸¯ÇÑ ÁöÁ¡ÀÌ ½ÃÀÛÁ¡
+		p1.x = x;					//í´ë¦­í•œ ì§€ì ì´ ì‹œì‘ì 
 		p1.y = y;
 		p2.x = x;
 		p2.y = y;
 		break;
-	case cv::EVENT_LBUTTONUP:		//¸¶¿ì½º ¿ŞÂÊ ¹öÆ°À» ¶¿ ¶§
+	case cv::EVENT_LBUTTONUP:		//ë§ˆìš°ìŠ¤ ì™¼ìª½ ë²„íŠ¼ì„ ë—„ ë•Œ
 		clicked = false;
 		p2.x = x;
 		p2.y = y;
 		break;
-	case cv::EVENT_MOUSEMOVE:		//¸¶¿ì½º¸¦ ¿òÁ÷ÀÏ ¶§
-		if (clicked) {				//trueÀÏ ¶§ È°¼ºÈ­
+	case cv::EVENT_MOUSEMOVE:		//ë§ˆìš°ìŠ¤ë¥¼ ì›€ì§ì¼ ë•Œ
+		if (clicked) {				//trueì¼ ë•Œ í™œì„±í™”
 			p2.x = x;
 			p2.y = y;
 		}
@@ -61,7 +61,7 @@ void onMouse(int event, int x, int y, int flag, void* user_data) {
 	default:
 		break;
 	}
-	//»ç°¢Çü ¿µ¿ª ¼³Á¤
+	//ì‚¬ê°í˜• ì˜ì—­ ì„¤ì •
 	if (p1.x > p2.x) {
 		rect.x = p2.x;
 		rect.width = p1.x - p2.x;
@@ -82,7 +82,7 @@ void onMouse(int event, int x, int y, int flag, void* user_data) {
 }
 
 int main(void) {
-	imgOrg = cv::imread("326.jpg");	//load original image
+	imgOrg = cv::imread("bi.jpg");	//load original image
 	cv::namedWindow("Original image", cv::WINDOW_AUTOSIZE);
 	cv::setMouseCallback("Original image", onMouse, NULL);
 	
