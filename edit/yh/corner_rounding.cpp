@@ -11,18 +11,18 @@ int main(void)
 
 	Mat src = imread(filename);
 	Mat filter = imread(filename2);
-//	imshow("before", src);		//±âÁ¸ »çÁø
+//	imshow("before", src);		//ê¸°ì¡´ ì‚¬ì§„
 
 	Mat dst;
-	resize(src, dst, Size(filter.cols, filter.rows), 0, 0);			//»çÁøÀ» ÇÊÅÍ»çÀÌÁî¿¡ ¸Â°Ô º¯°æ
+	resize(src, dst, Size(filter.cols, filter.rows), 0, 0);			//ì‚¬ì§„ì„ í•„í„°ì‚¬ì´ì¦ˆì— ë§ê²Œ ë³€ê²½
 
 	Mat result;
 
-	result = dst - filter;			//ÀÌ¹ÌÁö¿¬»ê
+	result = dst - filter;			//ì´ë¯¸ì§€ì—°ì‚°
 	
 	imshow("result", result);
-//	imshow("after", dst);		//Å©±â º¯°æµÈ »çÁø
-//	imshow("filter", filter);		//ÇÊÅÍ»çÁø
+//	imshow("after", dst);		//í¬ê¸° ë³€ê²½ëœ ì‚¬ì§„
+//	imshow("filter", filter);		//í•„í„°ì‚¬ì§„
 	
 	waitKey();
 	return 0;
