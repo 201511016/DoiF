@@ -1,0 +1,222 @@
+#include <opencv2/objdetect.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
+#include <iostream>
+
+using namespace std;
+using namespace cv;
+
+void detectAndDraw(Mat& img, CascadeClassifier& cascade, double scale, bool tryflip, Mat blur);
+void overlayImage(const Mat& background, const Mat& foreground,
+	Mat& output, Point2i location);
+
+//xml file 주소
+string cascadeName = "C:/opencv/sources/data/haarcascades/haarcascade_frontalface_alt.xml";
+string nestedCascadeName = "C:/opencv/sources/data/haarcascades/haarcascade_eye_tree_eyeglasses.xml";
+
+int main(int argc, const char** argv)
+{
+	VideoCapture capture;
+	Mat frame, image, blur;
+	string inputName = "test.jpg"; //face image
+	string blurfilter = "blur6.jpg"; //blur filter
+
+	bool tryflip = false;
+	CascadeClassifier cascade, nestedCascade;
+	double scale;
+
+	scale = 1;
+
+	//blurfilter image 불러오기 
+	blur = imread(blurfilter, IMREAD_UNCHANGED);
+	if (blur.empty()) {
+
+		cout << "Could not read image - " << blurfilter << endl;
+		return -1;
+	}
+
+	//얼굴 .xml file 불러오기
+	if (!cascade.load(samples::findFile(cascadeName)))
+	{
+		cerr << "ERROR: Could not load classifier cascade" << endl;
+		return -1;
+	}
+
+	if (inputName.empty() || (isdigit(inputName[0]) && inputName.size() == 1))
+	{
+		int camera = inputName.empty() ? 0 : inputName[0] - '0';
+		if (!capture.open(camera))
+		{
+			cout << "Capture from camera #" << camera << " didn't work" << endl;
+			return 1;
+		}
+	}
+
+	//이미지 얼굴인식
+	else if (!inputName.empty())
+	{
+		image = imread(samples::findFileOrKeep(inputName), IMREAD_COLOR);
+		if (image.empty())
+		{
+			if (!capture.open(samples::findFileOrKeep(inputName)))
+			{
+				cout << "Could not read " << inputName << endl;
+				return 1;
+			}
+		}
+
+		detectAndDraw(image, cascade, scale, tryflip, blur);
+
+		waitKey(0);
+	}
+
+	return 0;
+}
+
+//얼굴위치 검출 함수
+void detectAndDraw(Mat& img, CascadeClassifier& cascade, double scale, bool tryflip, Mat blur)
+{
+	Mat output2; //결과를 보여주기 위해 원본이미지 복사
+	img.copyTo(output2);
+
+	double t = 0;
+	vector<Rect> faces;
+	const static Scalar colors[] =
+	{
+		Scalar(255,0,0),
+		Scalar(255,128,0),
+		Scalar(255,255,0),
+		Scalar(0,255,0),
+		Scalar(0,128,255),
+		Scalar(0,255,255),
+		Scalar(0,0,255),
+		Scalar(255,0,255)
+	};
+	Mat gray, mask; //face검출을 위한 변수
+
+	cvtColor(img, gray, COLOR_BGR2GRAY);
+	double fx = 1 / scale;
+	resize(gray, mask, Size(), fx, fx, INTER_LINEAR_EXACT);
+	equalizeHist(mask, mask);
+
+	//얼굴위치 검출
+	t = (double)getTickCount();
+	cascade.detectMultiScale(mask, faces, 1.1, 2, 0 | CASCADE_SCALE_IMAGE, Size(20, 20));
+
+	t = (double)getTickCount() - t;
+
+	printf("detection time = %g ms\n", t * 1000 / getTickFrequency());
+
+	//검출된 얼굴위치 저장 및 사용
+	for (size_t i = 0; i < faces.size(); i++)
+	{
+		Rect r = faces[i];
+		Mat maskROI;
+		Point center;
+		Scalar color = colors[i % 8];
+		int radius;
+
+		double aspect_ratio = (double)r.width / r.height;
+
+		/*
+		//얼굴위치에 circle 표시
+		if (0.75 < aspect_ratio && aspect_ratio < 1.3)
+		{
+			center.x = cvRound((r.x + r.width * 0.5) * scale);
+			center.y = cvRound((r.y + r.height * 0.5) * scale);
+			radius = cvRound((r.width + r.height) * 0.25 * scale);
+			circle(img, center, radius, color, 2, 8, 0);
+		}
+		else
+			rectangle(img, Point(cvRound(r.x * scale), cvRound(r.y * scale)),
+				Point(cvRound((r.x + r.width - 1) * scale), cvRound((r.y + r.height - 1) * scale)),
+				color, 3, 8, 0);
+		*/
+	}
+	/* seperate mask 
+	int nWidth = img.GetWidth();
+	int nHeight = img.GetHeight();
+	int nChannel=img.GetChannel();
+
+	CByteImage imageOut(nWidht, nHeight, nChannel);
+	
+	int r,c,h;
+	for(r=0; r < nHeight; r++)
+	for(c=0; c < nWidth; c++)
+	for(h=0; h < nChannel; h++)
+
+	Mat background_mask; 
+	blur.copyTo(background_mask);
+
+	Gaussianblur(blur, background_mask, Size(), 1, 0);
+
+	imageOut.GetAt(c,r,h) = img.GetAt(c,r,h) + background_mask.GetAt(c,r,h);
+
+	imageOut.SaveImage("result.jpg");
+	
+	*/
+
+	//계산 비율로 blurfilter image 크기 조절
+	Mat resized_blur;
+	resize(blur, resized_blur, Size(img.cols, img.rows), 0, 0);
+
+	Mat result;
+
+	//얼굴 이미지에 배경 이미지를 오버랩
+	overlayImage(output2, resized_blur, result, Point(0, 0));
+
+	imshow("result", result);
+	//imshow("result.jpg", imageOut);
+}
+
+
+void overlayImage(const Mat& background, const Mat& foreground,
+	Mat& output, Point2i location)
+{
+	background.copyTo(output);
+
+
+	// start at the row indicated by location, or at row 0 if location.y is negative.
+	for (int y = std::max(location.y, 0); y < background.rows; ++y)
+	{
+		int fY = y - location.y; // because of the translation
+
+		// we are done of we have processed all rows of the foreground image.
+		if (fY >= foreground.rows) {
+			break;
+		}
+
+		// start at the column indicated by location, 
+
+		// or at column 0 if location.x is negative.
+		for (int x = std::max(location.x, 0); x < background.cols; ++x)
+		{
+			int fX = x - location.x; // because of the translation.
+
+									 // we are done with this row if the column is outside of the foreground image.
+			if (fX >= foreground.cols) {
+				break;
+			}
+
+			// determine the opacity of the foregrond pixel, using its fourth (alpha) channel.
+			double opacity =
+				((double)foreground.data[fY * foreground.step + fX * foreground.channels() + 3])
+
+				/ 255.;
+
+
+			// and now combine the background and foreground pixel, using the opacity, 
+
+			// but only if opacity > 0.
+			for (int c = 0; opacity > 0 && c < output.channels(); ++c)
+			{
+				unsigned char foregroundPx =
+					foreground.data[fY * foreground.step + fX * foreground.channels() + c];
+				unsigned char backgroundPx =
+					background.data[y * background.step + x * background.channels() + c];
+				output.data[y * output.step + output.channels() * x + c] =
+					backgroundPx * (1. - opacity) + foregroundPx * opacity;
+			}
+		}
+	}
+}
