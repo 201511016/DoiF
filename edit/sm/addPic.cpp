@@ -26,8 +26,8 @@ int main(int argc, char** argv)
 
 	namedWindow("Display window", WINDOW_AUTOSIZE); 
 
-	//foreground 이미지 크기 조정
-	/*Mat image_resize_foreground;
+	/*foreground 이미지 크기 조정
+	Mat image_resize_foreground;
 	resize(image_foreground, image_resize_foreground, Size(), 0.5, 0.5);*/ 
 
 	Mat image_result1;
