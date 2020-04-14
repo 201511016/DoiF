@@ -8,24 +8,23 @@ int main(void)
 {
 	String filename = "saram.jpg";
 	String filename2 = "vintagefil.jpg";
+	String filename3 = "fireworkfil.jpg";
+	String filename4 = "concretefil.jpg";
 
 	Mat origin = imread(filename);
-	Mat filter = imread(filename2);
-	//	imshow("before", src);		//±âÁ¸ »çÁø
+	Mat vintagefilter = imread(filename2);
+	Mat fireworkfilter = imread(filename3);
+	Mat concretefilter = imread(filename4);
+
+	//	imshow("before", src);		//ê¸°ì¡´ ì‚¬ì§„
 	
 	
 	Mat Grayimage, Coolimage, Hotimage, Warmimage, Winterimage, Oceanimage, Boneimage, Pinkimage,  Autumnimage;
-	cvtColor(origin, Grayimage, COLOR_BGR2GRAY);				//Èæ¹éÇÊÅÍ
+	cvtColor(origin, Grayimage, COLOR_BGR2GRAY);				//í‘ë°±í•„í„°
 	imshow("Grayimg", Grayimage);
-
-	applyColorMap(origin, Coolimage, COLORMAP_COOL);
-	imshow("Coolimg", Coolimage);
 
 	applyColorMap(origin, Hotimage, COLORMAP_HOT);
 	imshow("Hotimg", Hotimage);
-
-	applyColorMap(origin, Warmimage, COLORMAP_SPRING);
-	imshow("Warmimg", Warmimage);
 
 	applyColorMap(origin, Winterimage, COLORMAP_WINTER);
 	imshow("Winterimg", Winterimage);
@@ -43,7 +42,7 @@ int main(void)
 	imshow("Boneimg", Boneimage);
 	
 	
-	////////////¹à±â Á¶Á¤
+	////////////ë°ê¸° ì¡°ì •
 	Mat Himg, Limg; 
 	
 	Himg = origin + Scalar(75, 75, 75);
@@ -54,34 +53,44 @@ int main(void)
 
 	imshow("Low Brightness", Limg);
 
-
-
-	///////////´ëºñ Á¶Á¤
+	///////////ëŒ€ë¹„ ì¡°ì •
 	Scalar avg = mean(origin) / 2.0;
-	// ¸í¾Ï´ëºñ °¨¼Ò
+	// ëª…ì•”ëŒ€ë¹„ ê°ì†Œ
 	Mat mat = origin * 0.5;
-	// ¸í¾Ï´ëºñ Áõ°¡
+	// ëª…ì•”ëŒ€ë¹„ ì¦ê°€
 	Mat mat2 = origin * 2.0;
-	// Æò±Õ È­¼ÒÀÇ Àı¹İ ´ëºñ °¨¼Ò
+	// í‰ê·  í™”ì†Œì˜ ì ˆë°˜ ëŒ€ë¹„ ê°ì†Œ
 	Mat mat3 = origin * 0.5 + avg[0];
-	// Æò±Õ È­¼ÒÀÇ Àı¹İ ´ëºñ Áõ°¡
+	// í‰ê·  í™”ì†Œì˜ ì ˆë°˜ ëŒ€ë¹„ ì¦ê°€
 	Mat mat4 = origin * 2.0 - avg[0];
 
-	// ´ëºñ Á¶Á¤ ÈÄ ÀÌ¹ÌÁö º¸±â
-	imshow("¸í¾Ï´ëºñ °¨¼Ò", mat);
-	imshow("¸í¾Ï´ëºñ Áõ°¡", mat2);
-	imshow("Æò±Õ È­¼ÒÀÇ Àı¹İ ´ëºñ °¨¼Ò", mat3);
-	imshow("Æò±Õ È­¼ÒÀÇ Àı¹İ ´ëºñ Áõ°¡", mat4);
+	// ëŒ€ë¹„ ì¡°ì • í›„ ì´ë¯¸ì§€ ë³´ê¸°
+	imshow("ëª…ì•”ëŒ€ë¹„ ê°ì†Œ", mat);
+	imshow("ëª…ì•”ëŒ€ë¹„ ì¦ê°€", mat2);
+	imshow("í‰ê·  í™”ì†Œì˜ ì ˆë°˜ ëŒ€ë¹„ ê°ì†Œ", mat3);
+	imshow("í‰ê·  í™”ì†Œì˜ ì ˆë°˜ ëŒ€ë¹„ ì¦ê°€", mat4);
 
 	
 	Mat vintageimg;
-	resize(filter, vintageimg, Size(origin.cols, origin.rows), 0, 0);			//ÇÊÅÍ¸¦ »çÁø »çÀÌÁî¿¡ ¸ÂÃã.
+	resize(vintagefilter, vintageimg, Size(origin.cols, origin.rows), 0, 0);			//í•„í„°ë¥¼ ì‚¬ì§„ ì‚¬ì´ì¦ˆì— ë§ì¶¤.
+	Mat fireworkimg;
+	resize(fireworkfilter, fireworkimg, Size(origin.cols, origin.rows), 0, 0);
+	Mat concreteimg;
+	resize(concretefilter, concreteimg, Size(origin.cols, origin.rows), 0, 0);
 
-	Mat result;
-
-	result = (0.5)*vintageimg + origin;			//ÀÌ¹ÌÁö¿¬»ê
+	Mat vintageresult;
+	vintageresult = (0.5)*vintageimg + origin;			//ì´ë¯¸ì§€ì—°ì‚°
 	
-	imshow("Vintage image", result);					//ºóÆ¼Áö ÇÊÅÍ
+	Mat fireworkresult;
+	fireworkresult = (0.7)*fireworkimg + origin;
+	
+	Mat concreteresult;
+	concreteresult = (0.5)*concreteimg + (1.2)*origin;
+
+	imshow("Vintage image", vintageresult);					//ë¹ˆí‹°ì§€ í•„í„° ì ìš©
+	imshow("Firework image", fireworkresult);				//ë¶ˆê½ƒë†€ì´ í•„í„° ì ìš©
+	imshow("Concrete image", concreteresult);				//ì½˜í¬ë¦¬íŠ¸ í•„í„° ì ìš©
+
 	imshow("origin", origin);
 
 	waitKey();
