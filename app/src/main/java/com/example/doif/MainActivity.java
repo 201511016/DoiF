@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        create_butt = (Button)findViewById(R.id.create_butt);
+        create_butt = findViewById(R.id.create_butt);
 
         create_butt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -37,14 +37,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requesCode == REQUEST_CODE) {
+        if (requestCode == REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 try {
                     InputStream in = getContentResolver().openInputStream(data.getData());
                     Bitmap img = BitmapFactory.decodeStream(in);
-                    int.close();
+                    in.close();
 
-                    create_butt.setImageBitmap(img);
+                    create_butt.setimgBitmap(img);
                 } catch (Exception e) {
                 }
             } else if (resultCode == RESULT_CANCELED) {
